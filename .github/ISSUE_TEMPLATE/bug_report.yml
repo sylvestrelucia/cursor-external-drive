@@ -1,0 +1,68 @@
+name: Bug report
+description: Report a problem with migration scripts or documentation
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting. Include enough detail to reproduce on macOS.
+
+  - type: input
+    id: macos-version
+    attributes:
+      label: macOS version
+      placeholder: "e.g. 15.5"
+    validations:
+      required: true
+
+  - type: input
+    id: cursor-version
+    attributes:
+      label: Cursor version
+      placeholder: "e.g. 0.45.x — Cursor → About"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: drive-type
+    attributes:
+      label: External drive type
+      options:
+        - NVMe SSD (USB-C / Thunderbolt)
+        - SATA SSD
+        - HDD
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Ran install.sh
+        2. Ran setup-cursor-cache.sh
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Output from verify script, ~/Library/Logs/cursor-external-drive-setup.log, etc.
+      render: shell

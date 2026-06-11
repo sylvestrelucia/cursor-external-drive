@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Troubleshooting guide
+    url: https://github.com/sylvestrelucia/cursor-external-drive/blob/main/docs/troubleshooting.md
+    about: Common fixes before opening a bug report
+  - name: FAQ
+    url: https://github.com/sylvestrelucia/cursor-external-drive/blob/main/README.md#faq
+    about: Frequently asked questions
