@@ -6,6 +6,8 @@
 [![Platform: macOS](https://img.shields.io/badge/platform-macOS-lightgrey.svg)](#requirements)
 [![Shell: Bash](https://img.shields.io/badge/shell-bash-4EAA25.svg)](#scripts)
 
+![Before and after: 40 GB of Cursor data moved from a full Mac internal drive to an external drive](docs/assets/readme-comic.png)
+
 > **cursor-external-drive** is a Bash toolkit that relocates [Cursor](https://cursor.com) (the AI code editor) from your Mac’s internal SSD to an external volume using **symlinks**. It targets the folders that grow largest: `~/Library/Application Support/Cursor/User` (often 30+ GB), `~/.cursor` (agent projects & plans), and Electron cache directories.
 
 **Also searched as:** Cursor disk space macOS · move Cursor to external drive · Cursor `state.vscdb` too large · free space Cursor IDE · Cursor Application Support symlink · VS Code / Electron cache external SSD
