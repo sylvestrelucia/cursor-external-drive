@@ -1,0 +1,5 @@
+# Local config (copy from config.example.env)
+.config/
+
+# macOS
+.DS_Store
