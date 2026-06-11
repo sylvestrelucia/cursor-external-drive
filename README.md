@@ -25,6 +25,71 @@ Tested on **macOS** with Cursor (Electron / VS Code fork).
 - `rsync` (pre-installed on macOS)
 - Enough free space on the external drive for your Cursor data
 
+## Recommended external drive specs
+
+Cursor reads and writes constantly while open (`state.vscdb`, agent projects, extension cache). A slow or sleeping drive will feel like a laggy IDE.
+
+| Spec | Recommendation |
+|------|----------------|
+| **Media** | **SSD** (strongly preferred). HDD works but large syncs and daily use are noticeably slower. |
+| **Interface** | USB-C **3.2 (10 Gbps)+**, or **Thunderbolt 3/4 / USB4**. Avoid USB 2.0. |
+| **Enclosure** | NVMe SSD in a quality enclosure, or a portable Thunderbolt SSD. |
+| **Capacity** | **512 GB+** if Cursor shares the drive with repos or other data; **256 GB** minimum for Cursor alone. |
+| **Free space** | Current Cursor data **+ 50 GB** headroom (`state.vscdb` grows over time). |
+| **Format** | **APFS** on macOS (best compatibility with symlinks and metadata). Avoid exFAT for this use case. |
+| **Power** | Prefer a **direct Mac port** or a **powered hub**. Bus-powered HDDs on unpowered hubs can disconnect under load. |
+
+**Reliability tips**
+
+- Do not unplug the drive while Cursor is open.
+- In **System Settings → Lock Screen / Battery / Energy**, reduce aggressive disk sleep if the external volume drops offline.
+- Use a cable you trust; flaky connections corrupt SQLite (`state.vscdb`) during writes.
+
+## Mount the external drive at login
+
+Cursor expects the volume **before** it starts. If the drive is missing, symlinks break and Cursor opens with empty/default settings.
+
+### 1. Leave the drive connected
+
+The simplest approach: keep the drive plugged in. macOS usually remounts known APFS/HFS+ volumes automatically at boot once the disk is ready.
+
+**Start Cursor only after** the volume appears in Finder (or `/Volumes/`).
+
+### 2. Show volumes at login (sanity check)
+
+**System Settings → General → Login Items & Extensions → Open at Login** — optional, but useful for other startup apps.
+
+**System Settings → Desktop & Dock** — enable **Hard disks** (or **External disks**) on desktop so you can confirm the drive mounted before opening Cursor.
+
+### 3. Open the volume at login (if it does not auto-mount)
+
+If the disk is connected but not mounted at boot:
+
+1. Note the exact volume name in Finder (e.g. `External HD`) and set it in `config.env` as `CURSOR_EXTERNAL_VOLUME`.
+2. Add the included helper to **Login Items** (before Cursor):
+
+```bash
+chmod +x ~/Library/Scripts/cursor-external-drive/mount-external-volume.sh
+# System Settings → General → Login Items → + → select the script
+```
+
+Or run manually after install:
+
+```bash
+~/Library/Scripts/cursor-external-drive/mount-external-volume.sh
+```
+
+The migration **LaunchAgent** (`install.sh`) already re-runs symlink maintenance at login and hourly, but **only when the volume is mounted** — it does not mount the disk for you.
+
+### 4. Suggested startup order
+
+1. Mac boots (drive connected)
+2. External volume appears in `/Volumes/`
+3. LaunchAgent runs `setup-cursor-cache.sh` (if installed)
+4. Open Cursor
+
+If you use **FileVault** or a **password-protected APFS volume**, unlock the disk before starting Cursor.
+
 ## Quick start
 
 ```bash
@@ -72,6 +137,7 @@ Reopen Cursor. Verify:
 | `finalize-cursor-data.sh` | Final sync + symlink swap (Cursor must be quit) |
 | `watch-and-finalize-cursor-data.sh` | Background watcher: finalize when Cursor quits |
 | `verify-cursor-external-drive.sh` | Health check for symlinks and readability |
+| `mount-external-volume.sh` | Mount configured volume at login (Login Items) |
 | `install.sh` | Install scripts + hourly LaunchAgent |
 | `uninstall.sh` | Remove LaunchAgent only |
 
@@ -104,7 +170,7 @@ The `~/Library/Caches/…` folder name is Cursor’s macOS bundle identifier (`C
 
 ## Important notes
 
-1. **Keep the external drive mounted** before launching Cursor. If it’s disconnected, Cursor won’t find settings or cache.
+1. **Mount the external drive at login** before launching Cursor (see [Mount the external drive at login](#mount-the-external-drive-at-login)). If it’s disconnected, Cursor won’t find settings or cache.
 2. **Prevent sleep** during large initial copies (especially `User/globalStorage/state.vscdb`, which can be 30+ GB).
 3. **Install scripts on the internal drive** — LaunchAgents cannot reliably execute scripts stored on external volumes (`Operation not permitted`). `install.sh` copies scripts to `~/Library/Scripts/cursor-external-drive/`.
 4. **Quit Cursor** before the finalize step. Cursor cannot quit itself from an integrated terminal; use `Cmd+Q` or run finalize from an external Terminal.app window.
